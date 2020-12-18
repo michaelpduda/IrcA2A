@@ -1,0 +1,33 @@
+<!-- This file is part of the IrcA2A project, which is released under MIT License.
+     See LICENSE.md or visit:
+     https://github.com/michaelpduda/irca2a/blob/main/LICENSE.md
+     -->
+<uv:UpbeatControl x:Class="IrcA2A.View.InputControl"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:uv="clr-namespace:UpbeatUI.View;assembly=UpbeatUI"
+                  WidthPercent="30%"
+                  HeightPercent="80%"
+                  mc:Ignorable="d"
+                  d:DesignHeight="450" d:DesignWidth="800">
+    <Border BorderBrush="Black"
+            BorderThickness="1"
+            Background="White">
+        <DockPanel Margin="2.5">
+            <TextBlock DockPanel.Dock="Top"
+                       Text="{Binding EntryMessage, Mode=OneTime}"
+                       Margin="2.5" />
+            <Button DockPanel.Dock="Bottom"
+                    Command="{Binding CompleteCommand}"
+                    CommandParameter="{Binding Text, ElementName=_entryBox}"
+                    Content="{Binding CommandName}"
+                    Margin="2.5" />
+            <TextBox x:Name="_entryBox"
+                     TextWrapping="WrapWithOverflow"
+                     AcceptsReturn="True"
+                     Margin="2.5" />
+        </DockPanel>
+    </Border>
+</uv:UpbeatControl>

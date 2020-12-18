@@ -14,6 +14,81 @@
                   d:DesignHeight="450" d:DesignWidth="800">
     <Border Background="White">
         <Grid Margin="2.5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <DockPanel Grid.Column="0"
+                       DataContext="{Binding HistoryViewModel}">
+                <DockPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextAlignment"
+                                Value="Center" />
+                        <Setter Property="Margin"
+                                Value="2.5" />
+                    </Style>
+                </DockPanel.Resources>
+                <UniformGrid DockPanel.Dock="Top"
+                             Rows="2"
+                             HorizontalAlignment="Center">
+                    <UniformGrid.Resources>
+                        <Style TargetType="TextBox">
+                            <Setter Property="TextAlignment"
+                                    Value="Center" />
+                            <Setter Property="Margin"
+                                    Value="2.5" />
+                            <Setter Property="IsReadOnly"
+                                    Value="True" />
+                        </Style>
+                    </UniformGrid.Resources>
+                    <TextBlock>Rounds Played</TextBlock>
+                    <TextBlock>Adjectives</TextBlock>
+                    <TextBlock>Nouns</TextBlock>
+                    <TextBlock>Players</TextBlock>
+                    <TextBox Text="{Binding RoundsPlayed, Mode=OneWay}" />
+                    <TextBox Text="{Binding AdjectivesCount, Mode=OneWay}" />
+                    <TextBox Text="{Binding NounsCount, Mode=OneWay}" />
+                    <TextBox Text="{Binding Players.Count, Mode=OneWay}" />
+                </UniformGrid>
+                <UniformGrid Columns="1">
+                    <DataGrid ItemsSource="{Binding Players}"
+                              IsReadOnly="True"
+                              AutoGenerateColumns="False"
+                              Margin="2.5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name"
+                                                Binding="{Binding Name}" />
+                            <DataGridTextColumn Header="Games Played"
+                                                Binding="{Binding GamesPlayed}" />
+                            <DataGridTextColumn Header="Games Won"
+                                                Binding="{Binding GamesWon}" />
+                            <DataGridTextColumn Header="Games Judged"
+                                                Binding="{Binding GamesJudged}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <UniformGrid Columns="2">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top"
+                                       Margin="2.5">Adjectives</TextBlock>
+                            <Button DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding AddAdjectivesCommand}"
+                                    Margin="2.5">Add Adjectives</Button>
+                            <ListBox ItemsSource="{Binding Adjectives}"
+                                     Margin="2.5" />
+                        </DockPanel>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top"
+                                       Margin="2.5">Nouns</TextBlock>
+                            <Button DockPanel.Dock="Bottom"
+                                    HorizontalAlignment="Center"
+                                    Command="{Binding AddNounsCommand}"
+                                    Margin="2.5">Add Nouns</Button>
+                            <ListBox ItemsSource="{Binding Nouns}"
+                                     Margin="2.5" />
+                        </DockPanel>
+                    </UniformGrid>
+                </UniformGrid>
+            </DockPanel>
         </Grid>
     </Border>
 </uv:UpbeatControl>
