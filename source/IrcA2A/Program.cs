@@ -3,6 +3,7 @@
  * https://github.com/michaelpduda/irca2a/blob/main/LICENSE.md
  */
 using System.Windows;
+using IrcA2A.Communication;
 using IrcA2A.DataContext;
 using IrcA2A.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,7 @@ namespace IrcA2A
         private static void Main(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, serviceCollection) => serviceCollection
+                    .AddSingleton<CommunicationService>()
                     .AddSingleton<ContextService>())
                 .ConfigureUpbeatHost(() => new ManagementViewModel.Parameters { Args = args }, hostedUpbeatBuilder => hostedUpbeatBuilder
                     .ConfigureWindow(() => new UpbeatMainWindow
