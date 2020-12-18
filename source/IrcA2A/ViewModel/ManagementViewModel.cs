@@ -5,6 +5,7 @@
 using System;
 using IrcA2A.Communication;
 using IrcA2A.DataContext;
+using IrcA2A.GameEngine;
 using UpbeatUI.ViewModel;
 
 namespace IrcA2A.ViewModel
@@ -13,23 +14,28 @@ namespace IrcA2A.ViewModel
     {
         private readonly ContextService _contextService;
         private readonly CommunicationService _communicationService;
+        private readonly GameService _gameService;
 
-        public ManagementViewModel(IUpbeatService upbeatService, ContextService contextService, CommunicationService communicationService)
+        public ManagementViewModel(IUpbeatService upbeatService, ContextService contextService, CommunicationService communicationService, GameService gameService)
             : base(upbeatService)
         {
             _contextService = contextService ?? throw new ArgumentNullException(nameof(contextService));
             _communicationService = communicationService ?? throw new ArgumentNullException(nameof(communicationService));
+            _gameService = gameService ?? throw new ArgumentNullException(nameof(gameService));
 
             CommunicationViewModel = new CommunicationViewModel(_upbeatService, _communicationService);
+            GameViewModel = new GameViewModel(_upbeatService, _communicationService, _gameService);
             HistoryViewModel = new HistoryViewModel(_upbeatService, _contextService);
         }
 
         public CommunicationViewModel CommunicationViewModel { get; }
+        public GameViewModel GameViewModel { get; }
         public HistoryViewModel HistoryViewModel { get; }
 
         public void Dispose()
         {
             CommunicationViewModel.Dispose();
+            GameViewModel.Dispose();
             HistoryViewModel.Dispose();
         }
 

@@ -11,10 +11,11 @@
                   WidthPercent="100%"
                   HeightPercent="100%"
                   mc:Ignorable="d"
-                  d:DesignHeight="450" d:DesignWidth="800">
+                  d:DesignHeight="450" d:DesignWidth="1200">
     <Border Background="White">
         <Grid Margin="2.5">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition />
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
@@ -133,6 +134,72 @@
                          FontFamily="Courier New"
                          MinHeight="200"
                          Margin="2.5" />
+            </DockPanel>
+            <DockPanel Grid.Column="2"
+                       DataContext="{Binding GameViewModel}">
+                <UniformGrid DockPanel.Dock="Top"
+                             Rows="2"
+                             HorizontalAlignment="Center">
+                    <UniformGrid.Resources>
+                        <Style TargetType="TextBox">
+                            <Setter Property="TextAlignment"
+                                    Value="Center" />
+                            <Setter Property="Margin"
+                                    Value="2.5" />
+                            <Setter Property="IsReadOnly"
+                                    Value="True" />
+                        </Style>
+                    </UniformGrid.Resources>
+                    <TextBlock Margin="2.5">Current State</TextBlock>
+                    <TextBlock Margin="2.5">Current Judge</TextBlock>
+                    <TextBlock Margin="2.5">Current Adjective</TextBlock>
+                    <TextBlock Margin="2.5">Rounds Played</TextBlock>
+                    <TextBox Text="{Binding CurrentState, Mode=OneWay}"
+                             Margin="2.5" />
+                    <TextBox Text="{Binding CurrentJudge, Mode=OneWay}"
+                             Margin="2.5" />
+                    <TextBox Text="{Binding CurrentAdjective, Mode=OneWay}"
+                             Margin="2.5" />
+                    <TextBox Text="{Binding RoundsPlayed, Mode=OneWay}"
+                             Margin="2.5" />
+                </UniformGrid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="0"
+                               TextAlignment="Center"
+                               Margin="2.5">Players</TextBlock>
+                    <DataGrid x:Name="_activePlayers"
+                              Grid.Column="0"
+                              Grid.Row="1"
+                              ItemsSource="{Binding Players}"
+                              IsReadOnly="True"
+                              AutoGenerateColumns="False"
+                              Margin="2.5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name"
+                                                Binding="{Binding Name}" />
+                            <DataGridTextColumn Header="Wins"
+                                                Binding="{Binding Wins}" />
+                            <DataGridTextColumn Header="Active"
+                                                Binding="{Binding IsActive}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="0"
+                               TextAlignment="Center"
+                               Margin="2.5">Nouns</TextBlock>
+                    <ListBox Grid.Column="1"
+                             Grid.Row="1"
+                             ItemsSource="{Binding CurrentItem.Nouns, ElementName=_activePlayers}" />
+                </Grid>
             </DockPanel>
         </Grid>
     </Border>
