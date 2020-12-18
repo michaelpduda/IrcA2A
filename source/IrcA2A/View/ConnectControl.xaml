@@ -1,0 +1,79 @@
+<!-- This file is part of the IrcA2A project, which is released under MIT License.
+     See LICENSE.md or visit:
+     https://github.com/michaelpduda/irca2a/blob/main/LICENSE.md
+     -->
+<uv:UpbeatControl x:Class="IrcA2A.View.ConnectControl"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:uv="clr-namespace:UpbeatUI.View;assembly=UpbeatUI"
+                  mc:Ignorable="d"
+                  WidthPercent="50%"
+                  d:DesignHeight="450" d:DesignWidth="800">
+    <Border BorderBrush="Black"
+            BorderThickness="1"
+            Background="White">
+            <Grid Margin="2.5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="4"
+                           TextAlignment="Center"
+                           Margin="2.5">Enter connection information below:</TextBlock>
+                <TextBlock Grid.Row="1"
+                           Grid.Column="0"
+                           TextAlignment="Right"
+                           Margin="2.5">Nickname</TextBlock>
+                <TextBox Grid.Row="1"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"
+                         Text="{Binding Nickname, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="2.5" />
+                <TextBlock Grid.Row="3"
+                           Grid.Column="0"
+                           TextAlignment="Right"
+                           Margin="2.5">IRC Server Address</TextBlock>
+                <TextBox Grid.Row="3"
+                         Grid.Column="1"
+                         Text="{Binding IrcServerAddress, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="2.5" />
+                <TextBlock Grid.Row="3"
+                           Grid.Column="2"
+                           TextAlignment="Right"
+                           Margin="2.5">Port</TextBlock>
+                <TextBox Grid.Row="3"
+                         Grid.Column="3"
+                         Text="{Binding Port, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="2.5" />
+                <TextBlock Grid.Row="4"
+                           Grid.Column="0"
+                           TextAlignment="Right"
+                           Margin="2.5">Channel Name</TextBlock>
+                <TextBox Grid.Row="4"
+                         Grid.Column="1"
+                         Grid.ColumnSpan="3"
+                         Text="{Binding ChannelName, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="2.5" />
+                <Button Grid.Row="5"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="4"
+                        Command="{Binding StartCommand}"
+                        IsDefault="True"
+                        Margin="2.5">Connect</Button>
+            </Grid>
+    </Border>
+</uv:UpbeatControl>

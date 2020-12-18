@@ -16,6 +16,7 @@
         <Grid Margin="2.5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <DockPanel Grid.Column="0"
                        DataContext="{Binding HistoryViewModel}">
@@ -88,6 +89,50 @@
                         </DockPanel>
                     </UniformGrid>
                 </UniformGrid>
+            </DockPanel>
+            <DockPanel Grid.Column="1"
+                       DataContext="{Binding CommunicationViewModel}">
+                <UniformGrid DockPanel.Dock="Top"
+                             Rows="2"
+                             HorizontalAlignment="Center">
+                    <UniformGrid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextAlignment"
+                                    Value="Center" />
+                            <Setter Property="Margin"
+                                    Value="2.5" />
+                        </Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="TextAlignment"
+                                    Value="Center" />
+                            <Setter Property="Margin"
+                                    Value="2.5" />
+                            <Setter Property="IsReadOnly"
+                                    Value="True" />
+                        </Style>
+                    </UniformGrid.Resources>
+                    <TextBlock>IRC Server</TextBlock>
+                    <TextBlock>Port</TextBlock>
+                    <TextBlock>Channel</TextBlock>
+                    <TextBlock>Nickname</TextBlock>
+                    <TextBox Text="{Binding IrcServer, Mode=OneWay}" />
+                    <TextBox Text="{Binding Port, Mode=OneWay}" />
+                    <TextBox Text="{Binding Channel, Mode=OneWay}" />
+                    <TextBox Text="{Binding Nick, Mode=OneWay}" />
+                </UniformGrid>
+                <UniformGrid DockPanel.Dock="Bottom"
+                             Rows="1"
+                             HorizontalAlignment="Center">
+                    <Button Command="{Binding ConnectCommand}"
+                            Margin="2.5">Connect</Button>
+                    <Button Command="{Binding DisconnectCommand}"
+                            Margin="2.5">Disconnect</Button>
+                </UniformGrid>
+                <ListBox x:Name="_ircMessages"
+                         ItemsSource="{Binding Messages}"
+                         FontFamily="Courier New"
+                         MinHeight="200"
+                         Margin="2.5" />
             </DockPanel>
         </Grid>
     </Border>
