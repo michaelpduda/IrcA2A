@@ -5,6 +5,7 @@
 using System.Windows;
 using IrcA2A.Communication;
 using IrcA2A.DataContext;
+using IrcA2A.GameEngine;
 using IrcA2A.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,8 @@ namespace IrcA2A
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, serviceCollection) => serviceCollection
                     .AddSingleton<CommunicationService>()
-                    .AddSingleton<ContextService>())
+                    .AddSingleton<ContextService>()
+                    .AddSingleton<GameService>())
                 .ConfigureUpbeatHost(() => new ManagementViewModel.Parameters { Args = args }, hostedUpbeatBuilder => hostedUpbeatBuilder
                     .ConfigureWindow(() => new UpbeatMainWindow
                     {
