@@ -5,12 +5,16 @@
      https://github.com/michaelpduda/irca2a/blob/main/LICENSE.md
      -->
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="UpbeatUI.Extensions.Hosting" Version="2.1.1" />
   </ItemGroup>
 
 </Project>
