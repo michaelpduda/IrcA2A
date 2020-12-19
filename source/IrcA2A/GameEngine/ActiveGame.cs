@@ -326,7 +326,7 @@ namespace IrcA2A.GameEngine
         {
             var top = Wins
                 .Where(kv => kv.Value > 0)
-                .OrderBy(kv => kv.Value)
+                .OrderByDescending(kv => kv.Value)
                 .Take(5)
                 .Select((kv, i) => $"{i + 1}. {kv.Key.AsName()} ({kv.Value})")
                 .ToList();
