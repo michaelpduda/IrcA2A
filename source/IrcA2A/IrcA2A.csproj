@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="NetIrc2" Version="1.0.0" />
+    <PackageReference Include="SmartIrc4net" Version="1.1.0" />
     <PackageReference Include="UpbeatUI.Extensions.Hosting" Version="2.1.1" />
   </ItemGroup>
 

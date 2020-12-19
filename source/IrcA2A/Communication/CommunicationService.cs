@@ -4,16 +4,18 @@
  */
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
-using NetIrc2;
-using NetIrc2.Events;
+using Meebey.SmartIrc4net;
 
 namespace IrcA2A.Communication
 {
     public class CommunicationService : IDisposable
     {
+        private readonly Collection<string> _messages = new Collection<string>();
+        private ManualResetEvent _ended = new ManualResetEvent(false);
         private IrcClient _ircClient;
-        private Collection<string> _messages = new Collection<string>();
+        private int _messageWidth;
 
         public CommunicationService() =>
             Messages = new ReadOnlyCollection<string>(_messages);
@@ -34,87 +36,158 @@ namespace IrcA2A.Communication
             if (_ircClient != null)
                 throw new InvalidOperationException("Already connected");
             _messages.Clear();
+            _ircClient = new IrcClient();
+            _ircClient.OnAutoConnectError += IrcClientOnAutoConnectError;
+            _ircClient.OnAway += IrcClientOnAway;
+            _ircClient.OnBan += IrcClientOnBan;
+            _ircClient.OnBanException += IrcClientOnBanException;
+            _ircClient.OnBounce += IrcClientOnBounce;
+            _ircClient.OnChannelAction += IrcClientOnChannelAction;
+            _ircClient.OnChannelActiveSynced += IrcClientOnChannelActiveSynced;
+            _ircClient.OnChannelAdmin += IrcClientOnChannelAdmin;
+            _ircClient.OnChannelMessage += IrcClientOnChannelMessage;
+            _ircClient.OnChannelModeChange += IrcClientOnChannelModeChange;
+            _ircClient.OnChannelNotice += IrcClientOnChannelNotice;
+            _ircClient.OnChannelPassiveSynced += IrcClientOnChannelPassiveSynced;
+            _ircClient.OnConnected += IrcClientOnConnected;
+            _ircClient.OnConnecting += IrcClientOnConnecting;
+            _ircClient.OnConnectionError += IrcClientOnConnectionError;
+            _ircClient.OnCtcpReply += IrcClientOnCtcpReply;
+            _ircClient.OnCtcpRequest += IrcClientOnCtcpRequest;
+            _ircClient.OnDeChannelAdmin += IrcClientOnDeChannelAdmin;
+            _ircClient.OnDehalfop += IrcClientOnDehalfop;
+            _ircClient.OnDeop += IrcClientOnDeop;
+            _ircClient.OnDeowner += IrcClientOnDeowner;
+            _ircClient.OnDevoice += IrcClientOnDevoice;
+            _ircClient.OnDisconnected += IrcClientOnDisconnected;
+            _ircClient.OnDisconnecting += IrcClientOnDisconnecting;
+            _ircClient.OnError += IrcClientOnError;
+            _ircClient.OnErrorMessage += IrcClientOnErrorMessage;
+            _ircClient.OnHalfop += IrcClientOnHalfop;
+            _ircClient.OnInvite += IrcClientOnInvite;
+            _ircClient.OnInviteException += IrcClientOnInviteException;
+            _ircClient.OnJoin += IrcClientOnJoin;
+            _ircClient.OnKick += IrcClientOnKick;
+            _ircClient.OnList += IrcClientOnList;
+            _ircClient.OnModeChange += IrcClientOnModeChange;
+            _ircClient.OnMotd += IrcClientOnMotd;
+            _ircClient.OnNames += IrcClientOnNames;
+            _ircClient.OnNickChange += IrcClientOnNickChange;
+            _ircClient.OnNowAway += IrcClientOnNowAway;
+            _ircClient.OnOp += IrcClientOnOp;
+            _ircClient.OnOwner += IrcClientOnOwner;
+            _ircClient.OnPart += IrcClientOnPart;
+            _ircClient.OnPing += IrcClientOnPing;
+            _ircClient.OnPong += IrcClientOnPong;
+            _ircClient.OnQueryAction += IrcClientOnQueryAction;
+            _ircClient.OnQueryMessage += IrcClientOnQueryMessage;
+            _ircClient.OnQueryNotice += IrcClientOnQueryNotice;
+            _ircClient.OnQuit += IrcClientOnQuit;
+            _ircClient.OnRegistered += IrcClientOnRegistered;
+            _ircClient.OnTopic += IrcClientOnTopic;
+            _ircClient.OnTopicChange += IrcClientOnTopicChange;
+            _ircClient.OnUnAway += IrcClientOnUnAway;
+            _ircClient.OnUnBanException += IrcClientOnUnBanException;
+            _ircClient.OnUnInviteException += IrcClientOnUnInviteException;
+            _ircClient.OnUnban += IrcClientOnUnban;
+            _ircClient.OnUserModeChange += IrcClientOnUserModeChange;
+            _ircClient.OnVoice += IrcClientOnVoice;
+            _ircClient.OnWho += IrcClientOnWho;
+            _ircClient.OnWriteLine += IrcClientOnWriteLine;
             try
             {
-                _ircClient = new IrcClient();
-                _ircClient.Closed += IrcClient_Closed;
-                _ircClient.Connected += IrcClient_Connected;
-                _ircClient.GotChannelListBegin += IrcClient_GotChannelListBegin;
-                _ircClient.GotChannelListEnd += IrcClient_GotChannelListEnd;
-                _ircClient.GotChannelListEntry += IrcClient_GotChannelListEntry;
-                _ircClient.GotChannelTopicChange += IrcClient_GotChannelTopicChange;
-                _ircClient.GotChatAction += IrcClient_GotChatAction;
-                _ircClient.GotInvitation += IrcClient_GotInvitation;
-                _ircClient.GotIrcError += IrcClient_GotIrcError;
-                _ircClient.GotJoinChannel += IrcClient_GotJoinChannel;
-                _ircClient.GotLeaveChannel += IrcClient_GotLeaveChannel;
-                _ircClient.GotMessage += IrcClient_GotMessage;
-                _ircClient.GotMode += IrcClient_GotMode;
-                _ircClient.GotMotdBegin += IrcClient_GotMotdBegin;
-                _ircClient.GotMotdEnd += IrcClient_GotMotdEnd;
-                _ircClient.GotMotdText += IrcClient_GotMotdText;
-                _ircClient.GotNameChange += IrcClient_GotNameChange;
-                _ircClient.GotNameListEnd += IrcClient_GotNameListEnd;
-                _ircClient.GotNameListReply += IrcClient_GotNameListReply;
-                _ircClient.GotNotice += IrcClient_GotNotice;
-                _ircClient.GotPingReply += IrcClient_GotPingReply;
-                _ircClient.GotUserKicked += IrcClient_GotUserKicked;
-                _ircClient.GotUserQuit += IrcClient_GotUserQuit;
-                _ircClient.GotWelcomeMessage += IrcClient_GotWelcomeMessage;
-                using (var x = new EventWaiter(h => _ircClient.Connected += h, h => _ircClient.Connected -= h))
-                    ThreadPool.QueueUserWorkItem(_ => _ircClient.Connect(ircServer, (int)port));
-                using (var x = new EventWaiter(h => _ircClient.GotMotdEnd += h, h => _ircClient.GotMotdEnd -= h))
-                    ThreadPool.QueueUserWorkItem(_ => _ircClient.LogIn(nick, nick, nick));
-                using (var x = new EventWaiter<JoinLeaveEventArgs>(h => _ircClient.GotJoinChannel += h, h => _ircClient.GotJoinChannel -= h))
-                    _ircClient.Join(channelName);
+                _ircClient.Connect(ircServer, (int)port);
+                _ircClient.Login(nick, $"{nick} Bot");
+                _ircClient.RfcJoin(channelName);
+                ThreadPool.QueueUserWorkItem(
+                    _ =>
+                    {
+                        try
+                        {
+                            _ircClient.Listen();
+                        }
+                        catch (Exception) { }
+                        _ended.Set();
+                    });
                 IrcServer = ircServer;
                 Port = port;
                 Nick = nick;
                 Channel = channelName;
                 Connected?.Invoke(this, EventArgs.Empty);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Dispose();
                 throw;
             }
         }
 
-        public void SendMessage(string message) =>
-            _ircClient.Message(Channel, $"4●99,99 {message}");
-
         public void Dispose()
         {
             if (_ircClient != null)
             {
-                _ircClient.Closed -= IrcClient_Closed;
-                _ircClient.Connected -= IrcClient_Connected;
-                _ircClient.GotChannelListBegin -= IrcClient_GotChannelListBegin;
-                _ircClient.GotChannelListEnd -= IrcClient_GotChannelListEnd;
-                _ircClient.GotChannelListEntry -= IrcClient_GotChannelListEntry;
-                _ircClient.GotChannelTopicChange -= IrcClient_GotChannelTopicChange;
-                _ircClient.GotChatAction -= IrcClient_GotChatAction;
-                _ircClient.GotInvitation -= IrcClient_GotInvitation;
-                _ircClient.GotIrcError -= IrcClient_GotIrcError;
-                _ircClient.GotJoinChannel -= IrcClient_GotJoinChannel;
-                _ircClient.GotLeaveChannel -= IrcClient_GotLeaveChannel;
-                _ircClient.GotMessage -= IrcClient_GotMessage;
-                _ircClient.GotMode -= IrcClient_GotMode;
-                _ircClient.GotMotdBegin -= IrcClient_GotMotdBegin;
-                _ircClient.GotMotdEnd -= IrcClient_GotMotdEnd;
-                _ircClient.GotMotdText -= IrcClient_GotMotdText;
-                _ircClient.GotNameChange -= IrcClient_GotNameChange;
-                _ircClient.GotNameListEnd -= IrcClient_GotNameListEnd;
-                _ircClient.GotNameListReply -= IrcClient_GotNameListReply;
-                _ircClient.GotNotice -= IrcClient_GotNotice;
-                _ircClient.GotPingReply -= IrcClient_GotPingReply;
-                _ircClient.GotUserKicked -= IrcClient_GotUserKicked;
-                _ircClient.GotUserQuit -= IrcClient_GotUserQuit;
-                _ircClient.GotWelcomeMessage -= IrcClient_GotWelcomeMessage;
-                _ircClient.LogOut();
-                _ircClient.Close();
+                _ircClient.RfcQuit();
+                _ended.WaitOne();
+                _ircClient.OnAutoConnectError -= IrcClientOnAutoConnectError;
+                _ircClient.OnAway -= IrcClientOnAway;
+                _ircClient.OnBan -= IrcClientOnBan;
+                _ircClient.OnBanException -= IrcClientOnBanException;
+                _ircClient.OnBounce -= IrcClientOnBounce;
+                _ircClient.OnChannelAction -= IrcClientOnChannelAction;
+                _ircClient.OnChannelActiveSynced -= IrcClientOnChannelActiveSynced;
+                _ircClient.OnChannelAdmin -= IrcClientOnChannelAdmin;
+                _ircClient.OnChannelMessage -= IrcClientOnChannelMessage;
+                _ircClient.OnChannelModeChange -= IrcClientOnChannelModeChange;
+                _ircClient.OnChannelNotice -= IrcClientOnChannelNotice;
+                _ircClient.OnChannelPassiveSynced -= IrcClientOnChannelPassiveSynced;
+                _ircClient.OnConnected -= IrcClientOnConnected;
+                _ircClient.OnConnecting -= IrcClientOnConnecting;
+                _ircClient.OnConnectionError -= IrcClientOnConnectionError;
+                _ircClient.OnCtcpReply -= IrcClientOnCtcpReply;
+                _ircClient.OnCtcpRequest -= IrcClientOnCtcpRequest;
+                _ircClient.OnDeChannelAdmin -= IrcClientOnDeChannelAdmin;
+                _ircClient.OnDehalfop -= IrcClientOnDehalfop;
+                _ircClient.OnDeop -= IrcClientOnDeop;
+                _ircClient.OnDeowner -= IrcClientOnDeowner;
+                _ircClient.OnDevoice -= IrcClientOnDevoice;
+                _ircClient.OnDisconnected -= IrcClientOnDisconnected;
+                _ircClient.OnDisconnecting -= IrcClientOnDisconnecting;
+                _ircClient.OnError -= IrcClientOnError;
+                _ircClient.OnErrorMessage -= IrcClientOnErrorMessage;
+                _ircClient.OnHalfop -= IrcClientOnHalfop;
+                _ircClient.OnInvite -= IrcClientOnInvite;
+                _ircClient.OnInviteException -= IrcClientOnInviteException;
+                _ircClient.OnJoin -= IrcClientOnJoin;
+                _ircClient.OnKick -= IrcClientOnKick;
+                _ircClient.OnList -= IrcClientOnList;
+                _ircClient.OnModeChange -= IrcClientOnModeChange;
+                _ircClient.OnMotd -= IrcClientOnMotd;
+                _ircClient.OnNames -= IrcClientOnNames;
+                _ircClient.OnNickChange -= IrcClientOnNickChange;
+                _ircClient.OnNowAway -= IrcClientOnNowAway;
+                _ircClient.OnOp -= IrcClientOnOp;
+                _ircClient.OnOwner -= IrcClientOnOwner;
+                _ircClient.OnPart -= IrcClientOnPart;
+                _ircClient.OnPing -= IrcClientOnPing;
+                _ircClient.OnPong -= IrcClientOnPong;
+                _ircClient.OnQueryAction -= IrcClientOnQueryAction;
+                _ircClient.OnQueryMessage -= IrcClientOnQueryMessage;
+                _ircClient.OnQueryNotice -= IrcClientOnQueryNotice;
+                _ircClient.OnQuit -= IrcClientOnQuit;
+                _ircClient.OnRegistered -= IrcClientOnRegistered;
+                _ircClient.OnTopic -= IrcClientOnTopic;
+                _ircClient.OnTopicChange -= IrcClientOnTopicChange;
+                _ircClient.OnUnAway -= IrcClientOnUnAway;
+                _ircClient.OnUnBanException -= IrcClientOnUnBanException;
+                _ircClient.OnUnInviteException -= IrcClientOnUnInviteException;
+                _ircClient.OnUnban -= IrcClientOnUnban;
+                _ircClient.OnUserModeChange -= IrcClientOnUserModeChange;
+                _ircClient.OnVoice -= IrcClientOnVoice;
+                _ircClient.OnWho -= IrcClientOnWho;
+                _ircClient.OnWriteLine -= IrcClientOnWriteLine;
                 _ircClient = null;
             }
+            _ended.Reset();
             IrcServer = null;
             Port = null;
             Nick = null;
@@ -125,85 +198,189 @@ namespace IrcA2A.Communication
         public MessageReceiver Open() =>
             new MessageReceiver(_ircClient ?? throw new InvalidOperationException($"{nameof(CommunicationService)} is not connected."));
 
-        private void AddMessage(string message)
-        {
-            _messages.Add(message);
-            MessageReceived?.Invoke(this, new MessageReceivedEventArgs { Message = message });
-        }
+        public void SendMessage(string message) =>
+            _ircClient.SendMessage(SendType.Message, Channel, $"4●99,99 {message}");
 
         public void SendNotice(string recipient, string message) =>
-            _ircClient.Notice(recipient, message);
+            _ircClient.SendMessage(SendType.Notice, recipient, message);
 
-        private void IrcClient_Closed(object sender, EventArgs e) =>
-            AddMessage($"Closed");
-        
-        private void IrcClient_Connected(object sender, EventArgs e) =>
-            AddMessage($"Connected");
-        
-        private void IrcClient_GotChannelListBegin(object sender, EventArgs e) =>
-            AddMessage($"GotChannelListBegin");
+        private void AddMessage(string message, IrcMessageData ircMessageData = null, [CallerMemberName] string messageType = "***")
+        {
+            _messageWidth = Math.Max(_messageWidth, message.Length);
+            var fullMessage = $"{messageType.Replace("IrcClientOn", "").PadRight(20)} {message.PadRight(_messageWidth)} {ircMessageData?.ToRaw() ?? ""}";
+            _messages.Add(fullMessage);
+            MessageReceived?.Invoke(this, new MessageReceivedEventArgs { Message = fullMessage });
+        }
 
-        private void IrcClient_GotChannelListEnd(object sender, EventArgs e) =>
-            AddMessage($"GotChannelListEnd");
+        private void IrcClientOnAutoConnectError(object sender, AutoConnectErrorEventArgs e) =>
+            AddMessage($"{e.Exception.GetType()}, Port: {e.Port}, {e.Exception.Message}");
 
-        private void IrcClient_GotChannelListEntry(object sender, ChannelListEntryEventArgs e) =>
-            AddMessage($"GotChannelListEntry:   {e.Channel} {e.UserCount} {e.Topic}");
+        private void IrcClientOnAway(object sender, AwayEventArgs e) =>
+            AddMessage($"{e.Who} '{e.AwayMessage}'", e.Data);
 
-        private void IrcClient_GotChannelTopicChange(object sender, ChannelTopicChangeEventArgs e) =>
-            AddMessage($"GotChannelTopicChange: {e.Channel} {e.NewTopic}");
+        private void IrcClientOnBan(object sender, BanEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who} -> {e.Hostmask}", e.Data);
 
-        private void IrcClient_GotChatAction(object sender, ChatMessageEventArgs e) =>
-            AddMessage($"GotChatAction:         {e.Sender.Nickname} {e.Recipient} '{e.Message}'");
+        private void IrcClientOnBanException(object sender, BanEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who} -> {e.Hostmask}", e.Data);
 
-        private void IrcClient_GotInvitation(object sender, InvitationEventArgs e) =>
-            AddMessage($"GotInvitation:         {e.Sender}.Nickname {e.Recipient} {e.Channel}");
+        private void IrcClientOnBounce(object sender, BounceEventArgs e) =>
+            AddMessage($"{e.Server} {e.Port}", e.Data);
 
-        private void IrcClient_GotIrcError(object sender, IrcErrorEventArgs e) =>
-            AddMessage($"GotIrcError:           {e.Error} {e.Data}");
+        private void IrcClientOnChannelAction(object sender, ActionEventArgs e) =>
+            AddMessage($"{e.Data.Channel} '{e.Data.Nick} {e.ActionMessage}'", e.Data);
 
-        private void IrcClient_GotJoinChannel(object sender, JoinLeaveEventArgs e) =>
-            AddMessage($"GotJoinChannel:        {e.Identity.Nickname}");
+        private void IrcClientOnChannelActiveSynced(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotLeaveChannel(object sender, JoinLeaveEventArgs e) =>
-            AddMessage($"GotLeaveChannel:       {e.Identity.Nickname}");
+        private void IrcClientOnChannelAdmin(object sender, ChannelAdminEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotMessage(object sender, ChatMessageEventArgs e) =>
-            AddMessage($"GotMessage:            {e.Sender.Nickname} {e.Recipient} '{e.Message}'");
+        private void IrcClientOnChannelMessage(object sender, IrcEventArgs e) =>
+            AddMessage($"{e.Data.Channel} {e.Data.Nick} '{e.Data.Message}'", e.Data);
 
-        private void IrcClient_GotMode(object sender, ModeEventArgs e) =>
-            AddMessage($"GotMode:               {e.Sender.Nickname} {e.Recipient} {e.Command} {e.ParameterCount}");
+        private void IrcClientOnChannelModeChange(object sender, ChannelModeChangeEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotMotdBegin(object sender, EventArgs e) =>
-            AddMessage($"GotMotdBegin");
+        private void IrcClientOnChannelNotice(object sender, IrcEventArgs e) =>
+            AddMessage($"{e.Data.Channel} '{e.Data.Message}'", e.Data);
 
-        private void IrcClient_GotMotdEnd(object sender, EventArgs e) =>
-            AddMessage($"GotMotdEnd");
+        private void IrcClientOnChannelPassiveSynced(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotMotdText(object sender, SimpleMessageEventArgs e) =>
-            AddMessage($"GotMotdText:           '{e.Message}'");
+        private void IrcClientOnConnected(object sender, EventArgs e) =>
+            AddMessage($"Connected:");
 
-        private void IrcClient_GotNameChange(object sender, NameChangeEventArgs e) =>
-            AddMessage($"GotNameChange:         {e.Identity.Nickname} {e.NewName}");
+        private void IrcClientOnConnecting(object sender, EventArgs e) =>
+            AddMessage($"Connecting");
 
-        private void IrcClient_GotNameListEnd(object sender, NameListEndEventArgs e) =>
-            AddMessage($"GotNameListEnd:        {e.Channel}");
+        private void IrcClientOnConnectionError(object sender, EventArgs e) =>
+            AddMessage($"ConnectionError");
 
-        private void IrcClient_GotNameListReply(object sender, NameListReplyEventArgs e) =>
-            AddMessage($"GotNameListReply:      {e.Channel}");
+        private void IrcClientOnCtcpReply(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotNotice(object sender, ChatMessageEventArgs e) =>
-            AddMessage($"GotNotice:             {e.Sender.Nickname} {e.Recipient} {e.Message}");
+        private void IrcClientOnCtcpRequest(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotPingReply(object sender, PingReplyEventArgs e) =>
-            AddMessage($"GotPingReply:          {e.Identity.Nickname} {e.Delay}");
+        private void IrcClientOnDeChannelAdmin(object sender, DeChannelAdminEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotUserKicked(object sender, KickEventArgs e) =>
-            AddMessage($"GotUserKicked:         {e.Sender.Nickname} {e.Recipient} {e.Channel} '{e.Reason}'");
+        private void IrcClientOnDehalfop(object sender, DehalfopEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotUserQuit(object sender, QuitEventArgs e) =>
-            AddMessage($"GotUserQuit:           {e.Identity.Nickname} '{e.QuitMessage}'");
+        private void IrcClientOnDeop(object sender, DeopEventArgs e) =>
+            AddMessage($"", e.Data);
 
-        private void IrcClient_GotWelcomeMessage(object sender, SimpleMessageEventArgs e) =>
-            AddMessage($"GotWelcomeMessage:     '{e.Message}'");
+        private void IrcClientOnDeowner(object sender, DeownerEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnDevoice(object sender, DevoiceEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnDisconnected(object sender, EventArgs e) =>
+            AddMessage($"");
+
+        private void IrcClientOnDisconnecting(object sender, EventArgs e) =>
+            AddMessage($"");
+
+        private void IrcClientOnError(object sender, ErrorEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnErrorMessage(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnHalfop(object sender, HalfopEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnInvite(object sender, InviteEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnInviteException(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnJoin(object sender, JoinEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who}", e.Data);
+
+        private void IrcClientOnKick(object sender, KickEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who} -> {e.Whom} '{e.KickReason}'", e.Data);
+
+        private void IrcClientOnList(object sender, ListEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnModeChange(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnMotd(object sender, MotdEventArgs e) =>
+            AddMessage($"{e.Data.Message}", e.Data);
+
+        private void IrcClientOnNames(object sender, NamesEventArgs e) =>
+            AddMessage($"{e.Channel} {string.Join(", ", e.UserList)}", e.Data);
+
+        private void IrcClientOnNickChange(object sender, NickChangeEventArgs e) =>
+            AddMessage($"{e.OldNickname} -> {e.NewNickname}", e.Data);
+
+        private void IrcClientOnNowAway(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnOp(object sender, OpEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnOwner(object sender, OwnerEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnPart(object sender, PartEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who} '{e.PartMessage}'", e.Data);
+
+        private void IrcClientOnPing(object sender, PingEventArgs e) =>
+            AddMessage($"{e.PingData}", e.Data);
+
+        private void IrcClientOnPong(object sender, PongEventArgs e) =>
+            AddMessage($"Lag: {e.Lag}", e.Data);
+
+        private void IrcClientOnQueryAction(object sender, IrcEventArgs e) =>
+            AddMessage($"{e.Data.Channel} {e.Data.Nick} '{e.Data.Message}'", e.Data);
+
+        private void IrcClientOnQueryMessage(object sender, IrcEventArgs e) =>
+            AddMessage($"{e.Data.Channel} {e.Data.Nick} {e.Data.Message}", e.Data);
+
+        private void IrcClientOnQueryNotice(object sender, IrcEventArgs e) =>
+            AddMessage($"{e.Data.Channel} {e.Data.Nick} {e.Data.Message}", e.Data);
+
+        private void IrcClientOnQuit(object sender, QuitEventArgs e) =>
+            AddMessage($"{e.Who} '{e.QuitMessage}'", e.Data);
+
+        private void IrcClientOnRegistered(object sender, EventArgs e) =>
+            AddMessage($"Registered");
+
+        private void IrcClientOnTopic(object sender, TopicEventArgs e) =>
+            AddMessage($"{e.Channel} '{e.Topic}'", e.Data);
+
+        private void IrcClientOnTopicChange(object sender, TopicChangeEventArgs e) =>
+            AddMessage($"{e.Channel} {e.Who} '{e.NewTopic}'", e.Data);
+
+        private void IrcClientOnUnAway(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnUnBanException(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnUnInviteException(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnUnban(object sender, UnbanEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnUserModeChange(object sender, IrcEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnVoice(object sender, VoiceEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnWho(object sender, WhoEventArgs e) =>
+            AddMessage($"", e.Data);
+
+        private void IrcClientOnWriteLine(object sender, WriteLineEventArgs e) =>
+            AddMessage($"{e.Line}");
     }
 }

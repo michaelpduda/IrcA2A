@@ -5,8 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using NetIrc2;
-using NetIrc2.Events;
+using Meebey.SmartIrc4net;
 
 namespace IrcA2A.Communication
 {
@@ -19,18 +18,20 @@ namespace IrcA2A.Communication
         public MessageReceiver(IrcClient ircClient)
         {
             _ircClient = ircClient ?? throw new ArgumentNullException(nameof(ircClient));
-            _ircClient.GotLeaveChannel += IrcClientGotLeaveChannel;
-            _ircClient.GotMessage += IrcClientGotMessage;
-            _ircClient.GotNameChange += IrcClientGotNameChange;
-            _ircClient.GotUserKicked += IrcClientGotUserKick;
+            _ircClient.OnChannelMessage += IrcClientOnMessage;
+            _ircClient.OnKick += IrcClientGotUserKick;
+            _ircClient.OnNickChange += IrcClientOnNickChange;
+            _ircClient.OnPart += IrcClientOnPart;
+            _ircClient.OnQuit += IrcClientGotQuit;
         }
 
         public void Dispose()
         {
-            _ircClient.GotLeaveChannel -= IrcClientGotLeaveChannel;
-            _ircClient.GotMessage -= IrcClientGotMessage;
-            _ircClient.GotNameChange -= IrcClientGotNameChange;
-            _ircClient.GotUserKicked -= IrcClientGotUserKick;
+            _ircClient.OnChannelMessage -= IrcClientOnMessage;
+            _ircClient.OnKick -= IrcClientGotUserKick;
+            _ircClient.OnNickChange -= IrcClientOnNickChange;
+            _ircClient.OnPart -= IrcClientOnPart;
+            _ircClient.OnQuit -= IrcClientGotQuit;
         }
 
         public void GetMessage(CancellationToken cancellationToken, Action<Received> processor)
@@ -53,16 +54,19 @@ namespace IrcA2A.Communication
             }
         }
 
-        private void IrcClientGotMessage(object sender, ChatMessageEventArgs e) =>
-            _receivedMessages.Add(new ReceivedMessage { Sender = e.Sender.Nickname, Message = e.Message });
-
-        private void IrcClientGotNameChange(object sender, NameChangeEventArgs e) =>
-            _receivedMessages.Add(new ReceivedNickChange { Sender = e.Identity.Nickname, NewNick = e.NewName });
-
-        private void IrcClientGotLeaveChannel(object sender, JoinLeaveEventArgs e) =>
-            _receivedMessages.Add(new ReceivedLeft { Sender = e.Identity.Nickname });
+        private void IrcClientOnMessage(object sender, IrcEventArgs e) =>
+            _receivedMessages.Add(new ReceivedMessage { Sender = e.Data.Nick, Message = e.Data.Message });
 
         private void IrcClientGotUserKick(object sender, KickEventArgs e) =>
-            _receivedMessages.Add(new ReceivedLeft { Sender = e.Recipient });
+            _receivedMessages.Add(new ReceivedLeft { Sender = e.Whom });
+
+        private void IrcClientOnNickChange(object sender, NickChangeEventArgs e) =>
+            _receivedMessages.Add(new ReceivedNickChange { Sender = e.OldNickname, NewNick = e.NewNickname });
+
+        private void IrcClientOnPart(object sender, PartEventArgs e) =>
+            _receivedMessages.Add(new ReceivedLeft { Sender = e.Who });
+
+        private void IrcClientGotQuit(object sender, QuitEventArgs e) =>
+            _receivedMessages.Add(new ReceivedLeft { Sender = e.Who });
     }
 }
