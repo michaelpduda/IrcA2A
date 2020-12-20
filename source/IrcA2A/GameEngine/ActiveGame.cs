@@ -4,10 +4,12 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using IrcA2A.Communication;
 using IrcA2A.DataContext;
+using IrcA2A.DataModel;
 
 namespace IrcA2A.GameEngine
 {
@@ -246,6 +248,20 @@ namespace IrcA2A.GameEngine
                 var winner = SubmittedNouns[chosenNoun];
                 Wins[winner]++;
                 _communicationService.SendMessage($"{winner.AsName()} is the winner of round {++RoundsPlayed} with {chosenNoun.AsNoun()} for {CurrentAdjective.AsAdjective()}!");
+                using (var a2aContext = _contextService.Open())
+                {
+                    a2aContext.PlayedRounds.Add(new PlayedRound()
+                    {
+                        AdjectiveCard = a2aContext.AdjectiveCards.Find(CurrentAdjective),
+                        Judge = a2aContext.FindOrCreatePlayer(CurrentJudge),
+                        PlayedCards = new Collection<NounCard>(SubmittedNouns.Keys.Select(s => a2aContext.NounCards.Find(s)).ToList()),
+                        Players = new Collection<Player>(SubmittedNouns.Values.Select(s => a2aContext.FindOrCreatePlayer(s)).ToList()),
+                        Timestamp = DateTime.Now,
+                        WinningCard = a2aContext.NounCards.Find(chosenNoun),
+                        WinningPlayer = a2aContext.FindOrCreatePlayer(winner),
+                    });
+                    a2aContext.SaveChanges();
+                }
                 ClearCurrentRound();
                 Expiration = DateTime.Now.AddSeconds(TimeBetweenRounds);
                 ExpirationWarned = false;
