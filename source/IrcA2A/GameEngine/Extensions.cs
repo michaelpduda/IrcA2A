@@ -14,10 +14,10 @@ namespace IrcA2A.GameEngine
             $"10{name}99,99";
 
         internal static string AsAdjective(this string adjective) =>
-            $"9,99▒1,9{adjective}9,99▒99,99";
+            $"3,0▐0,3{adjective}3,0▌99,99";
 
         internal static string AsNoun(this string noun) =>
-            $"5,99▒0,5{noun}5,99▒99,99";
+            $"5,0▐0,5{noun}5,0▌99,99";
 
         internal static void ShuffeFrom<T>(this Queue<T> destination, IEnumerable<T> source)
         {
