@@ -245,7 +245,7 @@ namespace IrcA2A.GameEngine
                 var chosenNoun = ShuffledNouns[pick - 1];
                 var winner = SubmittedNouns[chosenNoun];
                 Wins[winner]++;
-                _communicationService.SendMessage($"{winner.AsName()} is the winner of round {++RoundsPlayed} with {chosenNoun.AsNoun()} for {CurrentAdjective.AsAdjective()}!");
+                _communicationService.SendMessage($"{winner.AsName()} is the winner of round {++RoundsPlayed} with {CurrentAdjective.AsAdjective()} {chosenNoun.AsNoun()}!");
                 ClearCurrentRound();
                 Expiration = DateTime.Now.AddSeconds(TimeBetweenRounds);
                 ExpirationWarned = false;
