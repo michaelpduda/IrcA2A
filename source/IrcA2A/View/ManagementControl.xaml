@@ -13,35 +13,54 @@
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="1200">
     <Border Background="White">
+        <Border.Resources>
+            <Style TargetType="DataGrid">
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+            <Style TargetType="ListBox">
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+            <Style TargetType="Separator">
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment"
+                        Value="Center" />
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="TextAlignment"
+                        Value="Center" />
+                <Setter Property="IsReadOnly"
+                        Value="True" />
+                <Setter Property="Margin"
+                        Value="2.5" />
+            </Style>
+        </Border.Resources>
         <Grid Margin="2.5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
             <DockPanel Grid.Column="0"
+                       Grid.Row="0"
                        DataContext="{Binding HistoryViewModel}">
-                <DockPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="TextAlignment"
-                                Value="Center" />
-                        <Setter Property="Margin"
-                                Value="2.5" />
-                    </Style>
-                </DockPanel.Resources>
                 <UniformGrid DockPanel.Dock="Top"
-                             Rows="2"
-                             HorizontalAlignment="Center">
-                    <UniformGrid.Resources>
-                        <Style TargetType="TextBox">
-                            <Setter Property="TextAlignment"
-                                    Value="Center" />
-                            <Setter Property="Margin"
-                                    Value="2.5" />
-                            <Setter Property="IsReadOnly"
-                                    Value="True" />
-                        </Style>
-                    </UniformGrid.Resources>
+                             Rows="2">
                     <TextBlock>Rounds Played</TextBlock>
                     <TextBlock>Adjectives</TextBlock>
                     <TextBlock>Nouns</TextBlock>
@@ -54,8 +73,7 @@
                 <UniformGrid Columns="1">
                     <DataGrid ItemsSource="{Binding Players}"
                               IsReadOnly="True"
-                              AutoGenerateColumns="False"
-                              Margin="2.5">
+                              AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name"
                                                 Binding="{Binding Name}" />
@@ -69,99 +87,38 @@
                     </DataGrid>
                     <UniformGrid Columns="2">
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top"
-                                       Margin="2.5">Adjectives</TextBlock>
+                            <TextBlock DockPanel.Dock="Top">Adjectives</TextBlock>
                             <Button DockPanel.Dock="Bottom"
-                                    HorizontalAlignment="Center"
-                                    Command="{Binding AddAdjectivesCommand}"
-                                    Margin="2.5">Add Adjectives</Button>
-                            <ListBox ItemsSource="{Binding Adjectives}"
-                                     Margin="2.5" />
+                                    Command="{Binding AddAdjectivesCommand}">Add Adjectives</Button>
+                            <ListBox ItemsSource="{Binding Adjectives}" />
                         </DockPanel>
                         <DockPanel>
-                            <TextBlock DockPanel.Dock="Top"
-                                       Margin="2.5">Nouns</TextBlock>
+                            <TextBlock DockPanel.Dock="Top">Nouns</TextBlock>
                             <Button DockPanel.Dock="Bottom"
-                                    HorizontalAlignment="Center"
-                                    Command="{Binding AddNounsCommand}"
-                                    Margin="2.5">Add Nouns</Button>
-                            <ListBox ItemsSource="{Binding Nouns}"
-                                     Margin="2.5" />
+                                    Command="{Binding AddNounsCommand}">Add Nouns</Button>
+                            <ListBox ItemsSource="{Binding Nouns}" />
                         </DockPanel>
                     </UniformGrid>
                 </UniformGrid>
             </DockPanel>
-            <DockPanel Grid.Column="1"
-                       DataContext="{Binding CommunicationViewModel}">
-                <UniformGrid DockPanel.Dock="Top"
-                             Rows="2"
-                             HorizontalAlignment="Center">
-                    <UniformGrid.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextAlignment"
-                                    Value="Center" />
-                            <Setter Property="Margin"
-                                    Value="2.5" />
-                        </Style>
-                        <Style TargetType="TextBox">
-                            <Setter Property="TextAlignment"
-                                    Value="Center" />
-                            <Setter Property="Margin"
-                                    Value="2.5" />
-                            <Setter Property="IsReadOnly"
-                                    Value="True" />
-                        </Style>
-                    </UniformGrid.Resources>
-                    <TextBlock>IRC Server</TextBlock>
-                    <TextBlock>Port</TextBlock>
-                    <TextBlock>Channel</TextBlock>
-                    <TextBlock>Nickname</TextBlock>
-                    <TextBox Text="{Binding IrcServer, Mode=OneWay}" />
-                    <TextBox Text="{Binding Port, Mode=OneWay}" />
-                    <TextBox Text="{Binding Channel, Mode=OneWay}" />
-                    <TextBox Text="{Binding Nick, Mode=OneWay}" />
-                </UniformGrid>
-                <UniformGrid DockPanel.Dock="Bottom"
-                             Rows="1"
-                             HorizontalAlignment="Center">
-                    <Button Command="{Binding ConnectCommand}"
-                            Margin="2.5">Connect</Button>
-                    <Button Command="{Binding DisconnectCommand}"
-                            Margin="2.5">Disconnect</Button>
-                </UniformGrid>
-                <ListBox x:Name="_ircMessages"
-                         ItemsSource="{Binding Messages}"
-                         FontFamily="Courier New"
-                         MinHeight="200"
-                         Margin="2.5" />
-            </DockPanel>
+            <StackPanel Grid.Column="1"
+                        Grid.Row="0"
+                        Orientation="Horizontal">
+                <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+            </StackPanel>
             <DockPanel Grid.Column="2"
+                       Grid.Row="0"
                        DataContext="{Binding GameViewModel}">
                 <UniformGrid DockPanel.Dock="Top"
-                             Rows="2"
-                             HorizontalAlignment="Center">
-                    <UniformGrid.Resources>
-                        <Style TargetType="TextBox">
-                            <Setter Property="TextAlignment"
-                                    Value="Center" />
-                            <Setter Property="Margin"
-                                    Value="2.5" />
-                            <Setter Property="IsReadOnly"
-                                    Value="True" />
-                        </Style>
-                    </UniformGrid.Resources>
-                    <TextBlock Margin="2.5">Current State</TextBlock>
-                    <TextBlock Margin="2.5">Current Judge</TextBlock>
-                    <TextBlock Margin="2.5">Current Adjective</TextBlock>
-                    <TextBlock Margin="2.5">Rounds Played</TextBlock>
-                    <TextBox Text="{Binding CurrentState, Mode=OneWay}"
-                             Margin="2.5" />
-                    <TextBox Text="{Binding CurrentJudge, Mode=OneWay}"
-                             Margin="2.5" />
-                    <TextBox Text="{Binding CurrentAdjective, Mode=OneWay}"
-                             Margin="2.5" />
-                    <TextBox Text="{Binding RoundsPlayed, Mode=OneWay}"
-                             Margin="2.5" />
+                             Rows="2">
+                    <TextBlock>Current State</TextBlock>
+                    <TextBlock>Current Judge</TextBlock>
+                    <TextBlock>Current Adjective</TextBlock>
+                    <TextBlock>Rounds Played</TextBlock>
+                    <TextBox Text="{Binding CurrentState, Mode=OneWay}" />
+                    <TextBox Text="{Binding CurrentJudge, Mode=OneWay}" />
+                    <TextBox Text="{Binding CurrentAdjective, Mode=OneWay}" />
+                    <TextBox Text="{Binding RoundsPlayed, Mode=OneWay}" />
                 </UniformGrid>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -173,16 +130,13 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Column="0"
-                               Grid.Row="0"
-                               TextAlignment="Center"
-                               Margin="2.5">Players</TextBlock>
+                               Grid.Row="0">Players</TextBlock>
                     <DataGrid x:Name="_activePlayers"
                               Grid.Column="0"
                               Grid.Row="1"
                               ItemsSource="{Binding Players}"
                               IsReadOnly="True"
-                              AutoGenerateColumns="False"
-                              Margin="2.5">
+                              AutoGenerateColumns="False">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Name"
                                                 Binding="{Binding Name}" />
@@ -193,14 +147,43 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBlock Grid.Column="1"
-                               Grid.Row="0"
-                               TextAlignment="Center"
-                               Margin="2.5">Nouns</TextBlock>
+                               Grid.Row="0">Nouns</TextBlock>
                     <ListBox Grid.Column="1"
                              Grid.Row="1"
                              ItemsSource="{Binding CurrentItem.Nouns, ElementName=_activePlayers}" />
                 </Grid>
             </DockPanel>
+            <Separator Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Grid.Row="1" />
+            <Grid Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Grid.Row="2"
+                  DataContext="{Binding CommunicationViewModel}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <UniformGrid Grid.Column="0"
+                             Columns="2"
+                             VerticalAlignment="Center">
+                    <Button Command="{Binding ConnectCommand}">Connect</Button>
+                    <Button Command="{Binding DisconnectCommand}">Disconnect</Button>
+                    <TextBlock>IRC Server</TextBlock>
+                    <TextBox Text="{Binding IrcServer, Mode=OneWay}" />
+                    <TextBlock>Port</TextBlock>
+                    <TextBox Text="{Binding Port, Mode=OneWay}" />
+                    <TextBlock>Channel</TextBlock>
+                    <TextBox Text="{Binding Channel, Mode=OneWay}" />
+                    <TextBlock>Nickname</TextBlock>
+                    <TextBox Text="{Binding Nick, Mode=OneWay}" />
+                </UniformGrid>
+                <ListBox x:Name="_ircMessages"
+                         Grid.Column="1"
+                         ItemsSource="{Binding Messages}"
+                         FontFamily="Courier New"
+                         Grid.ColumnSpan="2" />
+            </Grid>
         </Grid>
     </Border>
 </uv:UpbeatControl>
