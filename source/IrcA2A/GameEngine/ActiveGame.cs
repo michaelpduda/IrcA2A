@@ -353,6 +353,7 @@ namespace IrcA2A.GameEngine
         {
             CurrentAdjective = null;
             CurrentJudge = null;
+            AwaitingPlayers.Clear();
             DiscardedNouns.AddRange(ShuffledNouns);
             ShuffledNouns.Clear();
             SubmittedNouns.Clear();
